@@ -1,30 +1,36 @@
-ARG PHP_VERSION
+ARG VERSION=8.4
 
-FROM php:${PHP_VERSION}-fpm
+FROM php:${VERSION}-cli-alpine
 
+# define variables
+ARG APP_PATH="/app"
+ENV APP_PATH=${APP_PATH}
+
+ARG USER="dev"
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-RUN apt-get update -y \
-    && apt-get install -y \
-      libfreetype6-dev \
-      libjpeg62-turbo-dev \
-      libpng-dev \
-      libzip-dev \
-      zip \
-      unzip \
-      curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/cache/apk/*
+# add packages
+RUN apk add --no-cache \
+    $PHPIZE_DEPS \
+    icu-dev \
+    libxml2-dev \
+    oniguruma-dev \
+    libzip-dev \
+    freetype-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libxslt-dev \
+    bzip2-dev \
+    zlib-dev \
+    curl
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && chmod +x /usr/local/bin/composer
+# install 'install-php-extensions' script
+RUN curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
+     -o /usr/local/bin/install-php-extensions \
+  && chmod +x /usr/local/bin/install-php-extensions
 
-RUN curl -sSLf \
-        -o /usr/local/bin/install-php-extensions \
-        https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
-    chmod +x /usr/local/bin/install-php-extensions
-
+# install extensions
 RUN install-php-extensions \
     bcmath \
     bz2 \
@@ -39,17 +45,26 @@ RUN install-php-extensions \
     pgsql \
     opcache \
     soap \
+    sodium \
     sockets \
     xsl \
     zip \
     xdebug
 
-WORKDIR /var/www
+# remove unused deps
+RUN apk del $PHPIZE_DEPS
 
-RUN groupmod -g ${GROUP_ID} www-data && \
-    usermod -u ${USER_ID} -g ${GROUP_ID} www-data && \
-    chown -R www-data:www-data /var/www
+# install composer
+RUN apk add --no-cache curl \
+  && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+  && chmod +x /usr/local/bin/composer
 
-EXPOSE 9000
+# create user
+RUN addgroup -g ${GROUP_ID} -S ${USER} \
+  && adduser -u ${USER_ID} -D -S -G ${USER} ${USER} \
+  && mkdir ${APP_PATH}  \
+  && chown -R ${USER}:${USER} ${APP_PATH}
 
-CMD ["php-fpm"]
+WORKDIR ${APP_PATH}
+
+CMD ["php-a"]
