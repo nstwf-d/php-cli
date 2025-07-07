@@ -67,4 +67,4 @@ RUN addgroup -g ${GROUP_ID} -S ${USER} \
 
 WORKDIR ${APP_PATH}
 
-CMD ["php-a"]
+CMD ["php", "-a"]
