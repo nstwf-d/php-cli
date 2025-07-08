@@ -1,6 +1,7 @@
 name: Build images and push it to registries
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
