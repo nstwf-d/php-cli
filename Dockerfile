@@ -1,6 +1,6 @@
-ARG VERSION=8.4
+ARG PHP_VERSION=8.4
 
-FROM php:${VERSION}-cli-alpine
+FROM php:${PHP_VERSION}-cli-alpine
 
 # define variables
 ARG APP_PATH="/app"
