@@ -3,7 +3,7 @@ ARG PHP_VERSION=8.4
 FROM php:${PHP_VERSION}-cli-alpine
 
 # define variables
-ARG APP_PATH="/app"
+ARG APP_PATH="/var/www"
 ENV APP_PATH=${APP_PATH}
 
 ARG USER="dev"
