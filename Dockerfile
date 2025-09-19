@@ -39,6 +39,7 @@ RUN install-php-extensions \
     exif \
     gd \
     intl \
+    mbstring \
     mysqli \
     pcntl \
     pdo_mysql \
