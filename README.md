@@ -22,5 +22,5 @@ docker run --rm nstwf/php-cli php -v
 Run your PHP script:
 
 ```bash
-docker run --rm -v $(pwd):/app -w /app nstwf/php-cli php your-script.php
+docker run --rm -v $(pwd):/app -w /app nstwf/php-cli php script.php
 ```
