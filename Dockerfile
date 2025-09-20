@@ -53,11 +53,8 @@ RUN install-php-extensions \
     sodium \
     sockets \
     xsl \
-    zip
-
-RUN if [ "$BUILD_ENV" = "dev" ]; then \
-        install-php-extensions xdebug; \
-    fi
+    zip \
+    $( [ "${BUILD_ENV:-}" = "dev" ] && echo xdebug )
 
 # remove unused deps
 RUN apk del $PHPIZE_DEPS
